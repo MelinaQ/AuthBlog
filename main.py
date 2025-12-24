@@ -13,6 +13,9 @@ from models import User
 from schemas import UserCreate, UserOut
 from security import hash_password
 
+from security import verify_password, create_access_token
+from schemas import Token
+
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
@@ -67,3 +70,22 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return new_user
+
+@app.post("/auth/login", response_model=Token)
+def login(user: UserCreate, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.email == user.email).first()
+
+    if not db_user:
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+    
+    if not verify_password(user.password, db_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+    
+    access_token = create_access_token(
+        data={"sub": str(db_user.id)}
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
