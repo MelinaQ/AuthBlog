@@ -16,6 +16,8 @@ from security import hash_password
 from security import verify_password, create_access_token
 from schemas import Token
 
+from security import get_current_user 
+
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
@@ -89,3 +91,7 @@ def login(user: UserCreate, db: Session = Depends(get_db)):
         "access_token": access_token,
         "token_type": "bearer"
     }
+
+@app.get("/auth/me", response_model=UserOut)
+def read_current_user(current_user: User = Depends(get_current_user)):
+    return current_user
