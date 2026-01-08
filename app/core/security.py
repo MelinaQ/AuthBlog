@@ -7,8 +7,8 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi import HTTPException, status, Depends
 
 from sqlalchemy.orm import Session
-from database import SessionLocal
-from models import User
+from app.database import SessionLocal
+from app.models.user import User
 from jose import JWTError
 
 SECRET_KEY = "super-secret-key-change-this"
