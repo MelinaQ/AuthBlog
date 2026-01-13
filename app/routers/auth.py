@@ -32,7 +32,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
     return new_user
 
-@router.post("login", response_model=Token)
+@router.post("/login", response_model=Token)
 def login(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.email == user.email).first()
 
